@@ -1,10 +1,13 @@
-import { useState } from "react"
+import { calculateWinner } from "../utils/calculateWinner";
 import Square from "./Square"
 
-const Board = () => {
-    const [xIsNext, setXIsNext] = useState<boolean>(true);
-    const [squares, setSquares] = useState<(string | null)[]>(Array(9).fill(null));
+type BoardProps = {
+    xIsNext: boolean;
+    squares: (string | null)[];
+    onPlay: (nextSquares: (string | null)[]) => void;
+}
 
+const Board = ({ xIsNext, squares, onPlay }: BoardProps) => {
     function handleClick(i: number) {
         if (squares[i] || calculateWinner(squares)) {
             return
@@ -15,24 +18,7 @@ const Board = () => {
         } else {
             nextSquares[i] = "O";
         }
-        setSquares(nextSquares);
-        setXIsNext(!xIsNext);
-    }
-
-    const calculateWinner = (squares: (string | null)[]) => {
-        const lines = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
-        ];
-
-        for (let i = 0; i < lines.length; i++) {
-            const [a, b, c] = lines[i];
-            if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-                return squares[a];
-            }
-        }
-        return null;
+        onPlay(nextSquares);
     }
 
     const winner = calculateWinner(squares);
